@@ -1,28 +1,28 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import { PokemonDetail } from '../pokemon/interfaces/PokemonDetail';
+import { getPokemonsDetails } from '../pokemon/services/getPokemonsDetails';
+import { listPokemons, PokemonListInterface } from '../pokemon/services/listPokemons';
 
 interface PokedexProps {
 
 }
 
-interface PokemonListInterface{
-  name: string;
-  url: string;
-}
-
-
 export const Pokedex: React.FC<PokedexProps> = () => {
   
   const [pokemons, setPokemons] = useState<PokemonListInterface[]>([]);
-  const [selectedPokemon, setselectedPokemon] = useState<PokemonListInterface | undefined>(undefined)
-  const [selectedPokemonDetails, setselectedPokemonDetails] = useState<any | undefined>(undefined)
+  const [selectedPokemon, setselectedPokemon] = useState<PokemonListInterface | undefined>(undefined);
+  const [selectedPokemonDetails, setselectedPokemonDetails] = useState<PokemonDetail | undefined>(undefined);
 
   useEffect(()=> {
-    axios.get('https://pokeapi.co/api/v2/pokemon').then((response)=> setPokemons(response.data.results))
+    listPokemons().then((response)=> setPokemons(response.results))
   },[]);
 
   useEffect(()=> {
-    axios.get(`https://pokeapi.co/api/v2/pokemon/${selectedPokemon?.name}`).then((response)=> setselectedPokemonDetails(response.data))
+
+    if(!selectedPokemon) return;
+
+    getPokemonsDetails(selectedPokemon.name).then((response)=> setselectedPokemonDetails(response))
   },[selectedPokemon]);
 
   return(
